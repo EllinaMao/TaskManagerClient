@@ -2,21 +2,23 @@
 {
     internal class Program
     {
-        static async void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var client = new ControlAsync();
-            try
-            {
-                await client.ConnectAsync();
 
-                var processes = await client.GetProcessesAsync();
-                string file = await client.SaveInFileAsync("processes", processes);
-                await client.SendFileAsync(file);
-            }
-            finally
-            {
-                client.Close();
-            }
+            client.LogMessage += Console.WriteLine;
+            client.ServerConnected += msg => Console.WriteLine(msg);
+            client.ServerDisconnected += msg => Console.WriteLine(msg);
+
+            Console.WriteLine("Подключение к серверу...");
+            await client.ConnectAsync();
+
+            // Начинаем слушать команды от сервера
+            await client.ReceiveCommandsAsync();
+
+            Console.WriteLine("Для выхода нажмите Enter...");
+            Console.ReadLine();
+            client.Close();
         }
     }
 }
