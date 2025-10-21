@@ -93,8 +93,8 @@ namespace TaskManagerClient
                 IPAddress ipAddr = IPAddress.Parse(ip);
                 IPEndPoint ipEndPoint = new IPEndPoint(ipAddr, 49200);
                 await sock.ConnectAsync(ipEndPoint);
-                //byte[] msg = Encoding.Default.GetBytes(Dns.GetHostName());
-                //await sock.SendAsync(msg, SocketFlags.None);
+                byte[] msg = Encoding.Default.GetBytes(Dns.GetHostName());
+                await sock.SendAsync(msg, SocketFlags.None);
                 ServerConnected?.Invoke($"Connectes to {ip}:{port}");
 
             }
@@ -109,10 +109,10 @@ namespace TaskManagerClient
             try
             {
                 byte[] data = await File.ReadAllBytesAsync(filePath);
-                //byte[] lengthBytes = BitConverter.GetBytes(data.Length);
+                byte[] lengthBytes = BitConverter.GetBytes(data.Length);
 
-                //// Сначала отправляем длину файла (4 байта)
-                //await sock.SendAsync(lengthBytes, SocketFlags.None);
+                // Сначала отправляем длину файла (4 байта)
+                await sock.SendAsync(lengthBytes, SocketFlags.None);
 
                 // Потом отправляем содержимое файла
                 await sock.SendAsync(data);
