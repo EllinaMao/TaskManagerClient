@@ -20,7 +20,8 @@ namespace TaskManagerClient
         public event Action<string>? ServerConnected;
         public event Action<string>? ServerDisconnected;
 
-        private SynchronizationContext _uiContext = null;//winforms
+        private SynchronizationContext? _uiContext = null;//winforms
+
         public ControlAsync(string ip = "127.0.0.1", int port = 49200, SynchronizationContext uiContext = null)
         {
             this.ip = ip;
@@ -29,6 +30,7 @@ namespace TaskManagerClient
             _uiContext = uiContext ?? new SynchronizationContext();
 
         }
+
         private void Log(string msg)
         {
             if (_uiContext != null)
@@ -36,18 +38,23 @@ namespace TaskManagerClient
             else
                 LogMessage?.Invoke(msg);
         }
-        public async Task<List<string>> GetProcessesAsync()
+
+        public async Task<List<TaskManagerServer.ProcessInfo>> GetProcessesAsync()
         {
             return await Task.Run(() =>
             {
-                List<string> list = new List<string>();
+                var list = new List<TaskManagerServer.ProcessInfo>();
                 try
                 {
                     foreach (var proc in Process.GetProcesses())
                     {
                         lock (_lock)
                         {
-                            list.Add(proc.ProcessName);
+                            list.Add(new TaskManagerServer.ProcessInfo
+                            {
+                                Id = proc.Id,
+                                Name = proc.ProcessName
+                            });
                         }
                     }
                 }
@@ -58,11 +65,8 @@ namespace TaskManagerClient
                 return list;
             });
         }
-
-        public async Task<string> SaveInFileAsync(string fileName, List<string> data)
+        public async Task<string> SaveInFileAsync<T>(string fileName, List<T> data)
         {
-            //string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss_fff");
-            //string fullFileName = $"{fileName}_{timestamp}.json";
             string fullFileName = $"{fileName}.json";
             try
             {
@@ -89,10 +93,9 @@ namespace TaskManagerClient
                 IPAddress ipAddr = IPAddress.Parse(ip);
                 IPEndPoint ipEndPoint = new IPEndPoint(ipAddr, 49200);
                 await sock.ConnectAsync(ipEndPoint);
-                byte[] msg = Encoding.Default.GetBytes(Dns.GetHostName());
-                await sock.SendAsync(msg, SocketFlags.None);
+                //byte[] msg = Encoding.Default.GetBytes(Dns.GetHostName());
+                //await sock.SendAsync(msg, SocketFlags.None);
                 ServerConnected?.Invoke($"Connectes to {ip}:{port}");
-
 
             }
             catch (Exception ex)
@@ -106,13 +109,13 @@ namespace TaskManagerClient
             try
             {
                 byte[] data = await File.ReadAllBytesAsync(filePath);
-                byte[] lengthBytes = BitConverter.GetBytes(data.Length);
+                //byte[] lengthBytes = BitConverter.GetBytes(data.Length);
 
-                // Сначала отправляем длину файла (4 байта)
-                await sock.SendAsync(lengthBytes, SocketFlags.None);
+                //// Сначала отправляем длину файла (4 байта)
+                //await sock.SendAsync(lengthBytes, SocketFlags.None);
 
                 // Потом отправляем содержимое файла
-                await sock.SendAsync(data, SocketFlags.None);
+                await sock.SendAsync(data);
 
                 Log($"File {Path.GetFileName(filePath)} sended at {ip}:{port}");
             }
@@ -139,7 +142,8 @@ namespace TaskManagerClient
                     }
                     sb.Append(Encoding.Default.GetString(buffer, 0, bytesRead));
                     string json = sb.ToString();
-                    if (TryParseCommand(json, out CommandMessage command)){
+                    if (TryParseCommand(json, out CommandMessage command))
+                    {
                         await HandleCommandAsync(command);
                         sb.Clear();
                     }

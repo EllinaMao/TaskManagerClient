@@ -12,7 +12,6 @@
 
             Console.WriteLine("Подключение к серверу...");
             await client.ConnectAsync();
-
             // Начинаем слушать команды от сервера
             await client.ReceiveCommandsAsync();
 
