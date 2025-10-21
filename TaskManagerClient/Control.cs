@@ -70,12 +70,8 @@ namespace TaskManagerClient
             string fullFileName = $"{fileName}.json";
             try
             {
-                var option = new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                };
-                string json = JsonSerializer.Serialize(data, option);
-
+                string json = JsonSerializer.Serialize(data);
+                json += "\n";
                 await File.WriteAllTextAsync(fullFileName, json);
             }
             catch (Exception ex)
@@ -93,9 +89,9 @@ namespace TaskManagerClient
                 IPAddress ipAddr = IPAddress.Parse(ip);
                 IPEndPoint ipEndPoint = new IPEndPoint(ipAddr, 49200);
                 await sock.ConnectAsync(ipEndPoint);
-                byte[] msg = Encoding.Default.GetBytes(Dns.GetHostName());
-                await sock.SendAsync(msg, SocketFlags.None);
-                ServerConnected?.Invoke($"Connectes to {ip}:{port}");
+                //byte[] msg = Encoding.Default.GetBytes(Dns.GetHostName());
+                //await sock.SendAsync(msg, SocketFlags.None);
+                //ServerConnected?.Invoke($"Connectes to {ip}:{port}");
 
             }
             catch (Exception ex)
@@ -109,12 +105,7 @@ namespace TaskManagerClient
             try
             {
                 byte[] data = await File.ReadAllBytesAsync(filePath);
-                byte[] lengthBytes = BitConverter.GetBytes(data.Length);
-
-                // Сначала отправляем длину файла (4 байта)
-                await sock.SendAsync(lengthBytes, SocketFlags.None);
-
-                // Потом отправляем содержимое файла
+                // Oтправляем содержимое файла
                 await sock.SendAsync(data);
 
                 Log($"File {Path.GetFileName(filePath)} sended at {ip}:{port}");
@@ -206,7 +197,7 @@ namespace TaskManagerClient
             }
         }
 
-        private bool TryParseCommand(string json, out CommandMessage command)
+        private bool TryParseCommand(string json, out CommandMessage? command)
         {
             command = null;
             try
