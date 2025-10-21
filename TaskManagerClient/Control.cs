@@ -159,8 +159,20 @@ namespace TaskManagerClient
                     string fileName = await SaveInFileAsync("Processes", processes);
                     await SendFileAsync(fileName);
                     break;
+
                 case TaskManagerServer.ProcessCodes.KillProcess:
-                    int id = command.Data?.GetProperty("Id").GetInt32() ?? -1;
+       
+                    int id = -1;
+                    if (command.Data?.ValueKind == JsonValueKind.Number)
+                    {
+                        // Получаем значение Id
+                        id = command.Data.Value.GetInt32();
+                    }
+                    else
+                    {
+                        Log($"Invalid data for KillProcess: expected a Number, but got {command.Data?.ValueKind}");
+                    }
+
                     if (id > 0)
                     {
                         try
@@ -176,7 +188,18 @@ namespace TaskManagerClient
                     break;
 
                 case TaskManagerServer.ProcessCodes.CreateProcess:
-                    string path = command.Data?.GetProperty("Path").GetString() ?? "";
+                    // Проверяем, что Data - это строка
+                    string path = "";
+                    if (command.Data?.ValueKind == JsonValueKind.String)
+                    {
+                        // Получаем путь напрямую из Data
+                        path = command.Data.Value.GetString() ?? "";
+                    }
+                    else
+                    {
+                        Log($"Invalid data for CreateProcess: expected a String, but got {command.Data?.ValueKind}");
+                    }
+
                     if (!string.IsNullOrWhiteSpace(path))
                     {
                         try

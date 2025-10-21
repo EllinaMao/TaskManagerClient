@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36603.0 d17.14
+VisualStudioVersion = 17.14.36603.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManagerClient", "TaskManagerClient\TaskManagerClient.csproj", "{D4567B1A-6C3D-4B3D-9823-CC6550790242}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsApp1", "WinFormsApp1\WinFormsApp1.csproj", "{64ACE794-DA3A-4B37-8B65-819DE95867BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +15,6 @@ Global
 		{D4567B1A-6C3D-4B3D-9823-CC6550790242}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4567B1A-6C3D-4B3D-9823-CC6550790242}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4567B1A-6C3D-4B3D-9823-CC6550790242}.Release|Any CPU.Build.0 = Release|Any CPU
-		{64ACE794-DA3A-4B37-8B65-819DE95867BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{64ACE794-DA3A-4B37-8B65-819DE95867BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{64ACE794-DA3A-4B37-8B65-819DE95867BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{64ACE794-DA3A-4B37-8B65-819DE95867BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
